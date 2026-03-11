@@ -88,3 +88,23 @@ export async function registerRound(
 
   return { success: true, round_id: round.id, ranking };
 }
+
+export async function saveTicket(
+  ticketId: string,
+  category: string,
+  effect: string,
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("tickets")
+    .update({
+      category,
+      effect,
+      pending_spin: false,
+    })
+    .eq("id", ticketId);
+
+  if (error) return { error: error.message };
+  return { success: true };
+}
