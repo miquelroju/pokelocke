@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { logout } from "@/app/auth/actions";
 import NewGameModal from "@/components/NewGameModal";
+import RegisterRoundButton from "@/components/RegisterRoundButton";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -45,7 +46,10 @@ export default async function DashboardPage() {
               Gestiona tus partidas del randomlocke
             </p>
           </div>
-          <NewGameModal />
+          <div className="flex items-center gap-3">
+            <RegisterRoundButton userId={user.id} />
+            <NewGameModal />
+          </div>
         </div>
 
         {games && games.length > 0 ? (
