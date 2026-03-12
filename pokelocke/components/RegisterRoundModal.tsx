@@ -17,9 +17,9 @@ interface Battle {
 }
 
 const PHASES = [
-  { value: "ANTES_4_GYM", label: "Fase 1 - Antes del 4º gimnasio" },
-  { value: "ANTES_LIGA", label: "Fase 2 - Antes de la Liga" },
-  { value: "FINAL_JUEGO", label: "Fase 3 - Final del juego" },
+  { value: "antes_gym4", label: "Fase 1 - Antes del 4º gimnasio" },
+  { value: "antes_liga", label: "Fase 2 - Antes de la Liga" },
+  { value: "final", label: "Fase 3 - Final del juego" },
 ];
 
 function PlayerSearch({

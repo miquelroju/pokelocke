@@ -18,37 +18,37 @@ const CATEGORY_STYLES: Record<
   string,
   { border: string; text: string; badge: string; bg: string }
 > = {
-  COBRE: {
+  cobre: {
     border: "border-amber-700",
     text: "text-amber-300",
     badge: "bg-amber-700",
     bg: "bg-amber-950/40",
   },
-  PLATA: {
+  plata: {
     border: "border-gray-500",
     text: "text-gray-200",
     badge: "bg-gray-500",
     bg: "bg-gray-800/40",
   },
-  ORO: {
+  oro: {
     border: "border-yellow-500",
     text: "text-yellow-300",
     badge: "bg-yellow-500",
     bg: "bg-yellow-950/40",
   },
-  DIAMANTE: {
+  diamante: {
     border: "border-blue-500",
     text: "text-blue-300",
     badge: "bg-blue-500",
     bg: "bg-blue-950/40",
   },
-  PLATINO: {
+  platino: {
     border: "border-purple-500",
     text: "text-purple-300",
     badge: "bg-purple-500",
     bg: "bg-purple-950/40",
   },
-  PENDING: {
+  pending: {
     border: "border-gray-600",
     text: "text-gray-400",
     badge: "bg-gray-600",

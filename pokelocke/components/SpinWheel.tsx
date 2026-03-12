@@ -3,47 +3,47 @@
 import { useEffect, useRef, useState } from "react";
 
 const PHASES = {
-  ANTES_4_GYM: [
-    { category: "COBRE", label: "Cobre", color: "#b45309", probability: 50 },
-    { category: "PLATA", label: "Plata", color: "#6b7280", probability: 35 },
-    { category: "ORO", label: "Oro", color: "#d97706", probability: 13.9 },
+  antes_gym4: [
+    { category: "cobre", label: "Cobre", color: "#b45309", probability: 50 },
+    { category: "plata", label: "Plata", color: "#6b7280", probability: 35 },
+    { category: "oro", label: "Oro", color: "#d97706", probability: 13.9 },
     {
-      category: "DIAMANTE",
+      category: "diamante",
       label: "Diamante",
       color: "#3b82f6",
       probability: 1,
     },
     {
-      category: "PLATINO",
+      category: "platino",
       label: "Platino",
       color: "#8b5cf6",
       probability: 0.1,
     },
   ],
-  ANTES_LIGA: [
-    { category: "COBRE", label: "Cobre", color: "#b45309", probability: 20 },
-    { category: "PLATA", label: "Plata", color: "#6b7280", probability: 30 },
-    { category: "ORO", label: "Oro", color: "#d97706", probability: 30 },
+  antes_liga: [
+    { category: "cobre", label: "Cobre", color: "#b45309", probability: 20 },
+    { category: "plata", label: "Plata", color: "#6b7280", probability: 30 },
+    { category: "oro", label: "Oro", color: "#d97706", probability: 30 },
     {
-      category: "DIAMANTE",
+      category: "diamante",
       label: "Diamante",
       color: "#3b82f6",
       probability: 15,
     },
-    { category: "PLATINO", label: "Platino", color: "#8b5cf6", probability: 5 },
+    { category: "platino", label: "Platino", color: "#8b5cf6", probability: 5 },
   ],
-  FINAL_JUEGO: [
-    { category: "COBRE", label: "Cobre", color: "#b45309", probability: 0 },
-    { category: "PLATA", label: "Plata", color: "#6b7280", probability: 20 },
-    { category: "ORO", label: "Oro", color: "#d97706", probability: 35 },
+  final: [
+    { category: "cobre", label: "Cobre", color: "#b45309", probability: 0 },
+    { category: "plata", label: "Plata", color: "#6b7280", probability: 20 },
+    { category: "oro", label: "Oro", color: "#d97706", probability: 35 },
     {
-      category: "DIAMANTE",
+      category: "diamante",
       label: "Diamante",
       color: "#3b82f6",
       probability: 30,
     },
     {
-      category: "PLATINO",
+      category: "platino",
       label: "Platino",
       color: "#8b5cf6",
       probability: 15,
@@ -63,7 +63,7 @@ function spinRandom(phase: keyof typeof PHASES): string {
 }
 
 interface SpinWheelProps {
-  phase: keyof typeof PHASES;
+  phase: "antes_gym4" | "antes_liga" | "final";
   onResult: (category: string) => void;
 }
 

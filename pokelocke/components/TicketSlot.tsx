@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const TICKETS: Record<string, string[]> = {
-  COBRE: [
+  cobre: [
     "1 Recaptura / Pokémon",
     "1 Parche habilidad",
     "1 Traslado extra",
@@ -12,7 +12,7 @@ const TICKETS: Record<string, string[]> = {
     "1 MT normal random",
     "+252 EV",
   ],
-  PLATA: [
+  plata: [
     "2 Recapturas / Pokémon",
     "2 Parches habilidad",
     "2 Traslados extra",
@@ -21,7 +21,7 @@ const TICKETS: Record<string, string[]> = {
     "2 MT Categoría random",
     "±510 EV",
   ],
-  ORO: [
+  oro: [
     "3 Recapturas / Pokémon",
     "3 Traslados extra",
     "1 Objeto evolutivo a escoger",
@@ -30,7 +30,7 @@ const TICKETS: Record<string, string[]> = {
     "+10 IV en una stat",
     "1 Objeto competitivo",
   ],
-  DIAMANTE: [
+  diamante: [
     "1 Robo random de PC y Equipo",
     "+3 vidas",
     "1 Recaptura / Pokémon random",
@@ -38,7 +38,7 @@ const TICKETS: Record<string, string[]> = {
     "1 Escudo protector de tickets",
     "+10 IV en todas las stats",
   ],
-  PLATINO: [
+  platino: [
     "Baneo Pokémon",
     "Stop Ticket",
     "1 Shinify random",

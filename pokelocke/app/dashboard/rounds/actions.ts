@@ -68,21 +68,25 @@ export async function registerRound(
   for (const [index, [userId]] of ranking.entries()) {
     const ticketsEarned = ticketsPerPosition[index];
 
-    await supabase.from("combat_results").insert({
+    const { error: crError } = await supabase.from("combat_results").insert({
       user_id: userId,
-      poisition: index + 1,
+      position: index + 1,
       tickets_earned: ticketsEarned,
       phase,
       round_id: round.id,
     });
 
+    if (crError) return { error: crError.message };
+
     for (let i = 0; i < ticketsEarned; i++) {
-      await supabase.from("tickets").insert({
+      const { error: ticketError } = await supabase.from("tickets").insert({
         user_id: userId,
-        category: "PENDING",
-        effect: "PENDING",
+        category: "pending",
+        effect: "pending",
         used: false,
+        pending_spin: true,
       });
+      if (ticketError) return { error: ticketError.message };
     }
   }
 

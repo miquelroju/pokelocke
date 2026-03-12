@@ -6,9 +6,9 @@ import TicketSlot from "./TicketSlot";
 import { saveTicket } from "@/app/dashboard/rounds/actions";
 
 const PHASE_LABELS: Record<string, string> = {
-  ANTES_4_GYM: "Fase 1 - Antes del 4º gimnasio",
-  ANTES_LIGA: "Fase 2 - Antes de la Liga",
-  FINAL_JUEGO: "Fase 3 - Final del juego",
+  antes_gym4: "Fase 1 - Antes del 4º gimnasio",
+  antes_liga: "Fase 2 - Antes de la Liga",
+  final: "Fase 3 - Final del juego",
 };
 
 type Step = "wheel" | "slot" | "done";
@@ -68,7 +68,7 @@ export default function SpinModal({
               Gira la ruleta para descubrir la categoría de tu ticket
             </p>
             <SpinWheel
-              phase={phase as "ANTES_4_GYM" | "ANTES_LIGA" | "FINAL_JUEGO"}
+              phase={phase as "antes_gym4" | "antes_liga" | "final"}
               onResult={handleWheelResult}
             />
           </div>
