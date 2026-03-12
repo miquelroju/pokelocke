@@ -85,7 +85,7 @@ export default function SpinModal({
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md p-6 flex flex-col gap-5 items-center">
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 flex flex-col gap-5 items-center">
         {/* Header */}
         <div className="w-full flex items-center justify-between">
           <h2 className="text-white font-bold text-lg">🎰 Tirar ruleta</h2>

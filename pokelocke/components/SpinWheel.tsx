@@ -106,17 +106,21 @@ export default function SpinWheel({ phase, onResult }: SpinWheelProps) {
       // Texto
       const midAngle = startAngle + sliceAngle / 2;
       const textRadius = radius * 0.65;
-      ctx.save();
-      ctx.translate(
-        cx + textRadius * Math.cos(midAngle),
-        cy + textRadius * Math.sin(midAngle),
-      );
-      ctx.rotate(midAngle + Math.PI / 2);
-      ctx.fillStyle = "#fff";
-      ctx.font = `bold ${sliceAngle > 0.4 ? 13 : 10}px sans-serif`;
-      ctx.textAlign = "center";
-      ctx.fillText(seg.label, 0, 0);
-      ctx.restore();
+
+      if (sliceAngle > 0.15) {
+        // ← umbral: ~8.6 grados mínimo
+        ctx.save();
+        ctx.translate(
+          cx + textRadius * Math.cos(midAngle),
+          cy + textRadius * Math.sin(midAngle),
+        );
+        ctx.rotate(midAngle + Math.PI / 2);
+        ctx.fillStyle = "#fff";
+        ctx.font = `bold ${sliceAngle > 0.4 ? 13 : 10}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.fillText(seg.label, 0, 0);
+        ctx.restore();
+      }
 
       startAngle += sliceAngle;
     });
@@ -193,8 +197,8 @@ export default function SpinWheel({ phase, onResult }: SpinWheelProps) {
         </div>
         <canvas
           ref={canvasRef}
-          width={280}
-          height={280}
+          width={420}
+          height={420}
           className="rounded-full shadow-2xl"
         />
       </div>

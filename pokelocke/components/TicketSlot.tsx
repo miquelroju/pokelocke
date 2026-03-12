@@ -51,31 +51,31 @@ const CATEGORY_STYLES: Record<
   string,
   { bg: string; border: string; text: string; badge: string }
 > = {
-  COBRE: {
+  cobre: {
     bg: "bg-amber-950",
     border: "border-amber-700",
     text: "text-amber-300",
     badge: "bg-amber-700",
   },
-  PLATA: {
+  plata: {
     bg: "bg-gray-800",
     border: "border-gray-500",
     text: "text-gray-200",
     badge: "bg-gray-500",
   },
-  ORO: {
+  oro: {
     bg: "bg-yellow-950",
     border: "border-yellow-500",
     text: "text-yellow-300",
     badge: "bg-yellow-500",
   },
-  DIAMANTE: {
+  diamante: {
     bg: "bg-blue-950",
     border: "border-blue-500",
     text: "text-blue-300",
     badge: "bg-blue-500",
   },
-  PLATINO: {
+  platino: {
     bg: "bg-purple-950",
     border: "border-purple-500",
     text: "text-purple-300",
@@ -112,7 +112,7 @@ export default function TicketSlot({ category, onResult }: TicketSlotProps) {
   const translateY = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const animRef = useRef<number>(0);
-  const style = CATEGORY_STYLES[normalizedCategory] ?? CATEGORY_STYLES.cobre;
+  const style = CATEGORY_STYLES[normalizedCategory] ?? CATEGORY_STYLES["cobre"];
   const emoji = CATEGORY_EMOJIS[normalizedCategory] ?? "🎟️";
 
   // Construir lista larga con el ganador en el centro al final
@@ -187,10 +187,15 @@ export default function TicketSlot({ category, onResult }: TicketSlotProps) {
   const displayItems =
     items.length > 0
       ? items
-      : [
-          ...(TICKETS[normalizedCategory] ?? []),
-          ...(TICKETS[normalizedCategory] ?? []),
-        ];
+      : (() => {
+          const pool = TICKETS[normalizedCategory] ?? [];
+          const needed = VISIBLE_ITEMS;
+          const result: string[] = [];
+          for (let i = 0; i < needed; i++) {
+            result.push(pool[i % pool.length]);
+          }
+          return result;
+        })();
 
   return (
     <div className="flex flex-col items-center gap-5 w-full">
@@ -206,7 +211,7 @@ export default function TicketSlot({ category, onResult }: TicketSlotProps) {
       <div className="relative w-full max-w-xs">
         {/* Marco exterior con glow */}
         <div
-          className={`rounded-2xl border-2 ${style.border} overflow-hidden shadow-lg`}
+          className={`relative rounded-2xl border-2 ${style.border} overflow-hidden shadow-lg`}
           style={{ height: ITEM_HEIGHT * VISIBLE_ITEMS }}
         >
           {/* Gradientes de profundidad */}
