@@ -108,3 +108,14 @@ export async function saveTicket(
   if (error) return { error: error.message };
   return { success: true };
 }
+
+export async function markTicketAsUsed(ticketId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("tickets")
+    .update({ used: true })
+    .eq("id", ticketId);
+
+  if (error) return { error: error.message };
+  return { success: true };
+}

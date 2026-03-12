@@ -8,27 +8,22 @@ export async function login(formData: FormData) {
   const supabase = await createClient();
 
   let email = formData.get("emailOrUsername") as string;
+  const password = formData.get("password") as string;
 
   if (!email.includes("@")) {
-    const { data: profile, error } = await supabase
+    const { data: profile } = await supabase
       .from("profiles")
-      .select("id")
+      .select("email")
       .eq("username", email)
       .single();
 
-    if (error || !profile) redirect("/login?error=Usuario no encontrado");
-
-    const { data: userData } = await supabase.auth.admin.getUserById(
-      profile.id,
-    );
-    if (!userData?.user?.email) redirect("/login?error=Usuario no encontrado");
-
-    email = userData.user.email;
+    if (!profile?.email) redirect("/login?error=Usuario no encontrado");
+    email = profile.email;
   }
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
-    password: formData.get("password") as string,
+    password,
   });
 
   if (error) redirect("/login?error=Credenciales incorrectas");
