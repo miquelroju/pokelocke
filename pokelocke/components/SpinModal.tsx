@@ -64,15 +64,26 @@ export default function SpinModal({
   const [effect, setEffect] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  // Solo puede cerrar si NO tiene efecto asignado todavía
+  // Una vez la tragaperras ha dado un resultado, queda bloqueado hasta confirmar
+  function handleBack() {
+    if (effect !== null) return; // bloqueado: ya tiene premio
+    if (step === "confirm") {
+      setStep("slot");
+    } else {
+      onClose();
+    }
+  }
+
   async function handleWheelResult(cat: string) {
     const normalized = cat.toLowerCase();
     setCategory(normalized);
-    await saveTicketCategory(ticketId, normalized); // guardar en BD inmediatamente
+    await saveTicketCategory(ticketId, normalized);
     setTimeout(() => setStep("slot"), 1200);
   }
 
-  function handleSlotResult(effect: string) {
-    setEffect(effect);
+  function handleSlotResult(res: string) {
+    setEffect(res);
     setTimeout(() => setStep("confirm"), 1500);
   }
 
@@ -87,36 +98,20 @@ export default function SpinModal({
     ? (CATEGORY_STYLES[category] ?? CATEGORY_STYLES.cobre)
     : null;
 
-  const canGoBack = step === "wheel" || (step === "slot" && !effect);
-
   return (
     <div
       className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
-      onClick={() => {
-        if (step === "confirm") {
-          setStep("slot");
-        } else if (canGoBack) {
-          onClose();
-        }
-      }}
+      onClick={handleBack}
     >
-      {/* Contenedor relativo para anclar el botón cerca del modal */}
       <div className="relative w-full max-w-lg">
-        {/* Botón volver - justo encima del modal, a la izquierda */}
+        {/* Botón volver */}
         {step !== "done" && (
           <button
-            onClick={() => {
-              if (step === "confirm") {
-                setStep("slot");
-              } else if (canGoBack) {
-                onClose();
-              }
-              // si step === "slot" con efecto ya calculado, no hace nada
-            }}
+            onClick={handleBack}
             className={`absolute -top-8 left-0 text-sm transition-colors ${
-              canGoBack || step === "confirm"
-                ? "text-gray-400 hover:text-white cursor-pointer"
-                : "text-gray-700 cursor-not-allowed" // visualmente desactivado
+              effect !== null
+                ? "text-gray-700 cursor-not-allowed"
+                : "text-gray-400 hover:text-white cursor-pointer"
             }`}
           >
             ← Volver
@@ -128,7 +123,6 @@ export default function SpinModal({
           className="bg-gray-900 border border-gray-700 rounded-2xl w-full p-6 flex flex-col gap-5 items-center"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
           <div className="w-full flex items-center justify-between">
             <h2 className="text-white font-bold text-lg">🎰 Tirar ruleta</h2>
             {step === "done" && (
