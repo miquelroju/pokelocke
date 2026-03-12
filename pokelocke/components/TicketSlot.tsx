@@ -83,6 +83,14 @@ const CATEGORY_STYLES: Record<
   },
 };
 
+const CATEGORY_EMOJIS: Record<string, string> = {
+  cobre: "🟤",
+  plata: "⚪",
+  oro: "🟡",
+  diamante: "💎",
+  platino: "🔮",
+};
+
 function pickRandom(category: string): string {
   const list = TICKETS[category];
   return list[Math.floor(Math.random() * list.length)];
@@ -93,26 +101,34 @@ interface TicketSlotProps {
   onResult: (effect: string) => void;
 }
 
+const ITEM_HEIGHT = 72;
+const VISIBLE_ITEMS = 5;
+
 export default function TicketSlot({ category, onResult }: TicketSlotProps) {
+  const normalizedCategory = category?.toLowerCase() ?? "cobre";
   const [items, setItems] = useState<string[]>([]);
   const [spinning, setSpinning] = useState(false);
   const [finalEffect, setFinalEffect] = useState<string | null>(null);
-  const [offset, setOffset] = useState(0);
+  const translateY = useRef(0);
+  const containerRef = useRef<HTMLDivElement>(null);
   const animRef = useRef<number>(0);
-  const startTimeRef = useRef<number>(0);
-  const ITEM_HEIGHT = 80;
-  const VISIBLE = 3; // items visibles en la ventana
+  const style = CATEGORY_STYLES[normalizedCategory] ?? CATEGORY_STYLES.cobre;
+  const emoji = CATEGORY_EMOJIS[normalizedCategory] ?? "🎟️";
 
-  const style = CATEGORY_STYLES[category] ?? CATEGORY_STYLES.COBRE;
-
+  // Construir lista larga con el ganador en el centro al final
   function buildList(winner: string): string[] {
-    const pool = TICKETS[category];
+    const pool = TICKETS[normalizedCategory] ?? [];
     const list: string[] = [];
-    // 30 items random + el ganador al final
-    for (let i = 0; i < 30; i++) {
+    // Rellenar con 40 ítems random
+    for (let i = 0; i < 40; i++) {
       list.push(pool[Math.floor(Math.random() * pool.length)]);
     }
+    // El ganador va justo en la posición central visible al parar
     list.push(winner);
+    // Añadir items después para que no quede cortado
+    for (let i = 0; i < Math.floor(VISIBLE_ITEMS / 2); i++) {
+      list.push(pool[Math.floor(Math.random() * pool.length)]);
+    }
     return list;
   }
 
@@ -120,26 +136,37 @@ export default function TicketSlot({ category, onResult }: TicketSlotProps) {
     if (spinning || finalEffect) return;
     setSpinning(true);
 
-    const winner = pickRandom(category);
+    const winner = pickRandom(normalizedCategory);
     const list = buildList(winner);
     setItems(list);
-    setOffset(0);
 
-    const totalItems = list.length;
-    // Queremos que el último item (ganador) quede centrado
-    // El centro visible es el item en posición VISIBLE/2 (index 1 de 3)
-    const targetOffset =
-      (totalItems - Math.floor(VISIBLE / 2) - 1) * ITEM_HEIGHT;
-    const duration = 3500;
-    startTimeRef.current = performance.now();
+    // El ganador está en el índice 40
+    // Queremos que quede centrado: el centro visual es VISIBLE_ITEMS/2 * ITEM_HEIGHT desde el top
+    const winnerIndex = 40;
+    const centerOffset = Math.floor(VISIBLE_ITEMS / 2) * ITEM_HEIGHT;
+    const targetTranslate = -(winnerIndex * ITEM_HEIGHT - centerOffset);
+
+    // Empezamos desde arriba
+    translateY.current = 0;
+    if (containerRef.current) {
+      containerRef.current.style.transform = "translateY(0px)";
+    }
+
+    const duration = 4000;
+    const startTime = performance.now();
+    const startY = 0;
 
     function animate(now: number) {
-      const elapsed = now - startTimeRef.current;
+      const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
+      // Easing que arranca rápido y frena al final
       const ease = 1 - Math.pow(1 - progress, 4);
-      const current = targetOffset * ease;
+      const current = startY + targetTranslate * ease;
 
-      setOffset(current);
+      if (containerRef.current) {
+        containerRef.current.style.transform = `translateY(${current}px)`;
+      }
+      translateY.current = current;
 
       if (progress < 1) {
         animRef.current = requestAnimationFrame(animate);
@@ -157,80 +184,102 @@ export default function TicketSlot({ category, onResult }: TicketSlotProps) {
     return () => cancelAnimationFrame(animRef.current);
   }, []);
 
+  const displayItems =
+    items.length > 0
+      ? items
+      : [
+          ...(TICKETS[normalizedCategory] ?? []),
+          ...(TICKETS[normalizedCategory] ?? []),
+        ];
+
   return (
-    <div className="flex flex-col items-center gap-5">
+    <div className="flex flex-col items-center gap-5 w-full">
+      {/* Badge categoría */}
       <div
-        className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest ${style.badge} text-white`}
+        className={`flex items-center gap-2 px-4 py-1.5 rounded-full ${style.badge} text-white text-sm font-bold uppercase tracking-widest`}
       >
-        Ticket {category}
+        <span>{emoji}</span>
+        <span>Ticket {normalizedCategory}</span>
       </div>
 
       {/* Ventana del slot */}
-      <div
-        className={`relative w-64 rounded-xl border-2 ${style.border} overflow-hidden`}
-        style={{ height: ITEM_HEIGHT * VISIBLE }}
-      >
-        {/* Gradientes arriba y abajo para efecto de profundidad */}
+      <div className="relative w-full max-w-xs">
+        {/* Marco exterior con glow */}
         <div
-          className="absolute inset-x-0 top-0 h-12 z-10 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(10,10,10,0.9), transparent",
-          }}
-        />
-        <div
-          className="absolute inset-x-0 bottom-0 h-12 z-10 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(10,10,10,0.9), transparent)",
-          }}
-        />
-
-        {/* Líneas de selección central */}
-        <div
-          className={`absolute inset-x-0 z-10 pointer-events-none border-y-2 ${style.border}`}
-          style={{ top: ITEM_HEIGHT, height: ITEM_HEIGHT }}
-        />
-
-        {/* Items del slot */}
-        <div
-          className="absolute inset-x-0 top-0 flex flex-col transition-none"
-          style={{ transform: `translate(-${offset}px)` }}
+          className={`rounded-2xl border-2 ${style.border} overflow-hidden shadow-lg`}
+          style={{ height: ITEM_HEIGHT * VISIBLE_ITEMS }}
         >
-          {items.length === 0
-            ? TICKETS[category].concat(TICKETS[category]).map((t, i) => (
-                <div
-                  key={i}
-                  className={`flex items-center justify-center text-center px-4 cont-medium text-sm ${style.text}`}
-                  style={{ height: ITEM_HEIGHT }}
-                >
-                  {t}
-                </div>
-              ))
-            : items.map((t, i) => (
-                <div
-                  key={i}
-                  className={`flex items-center justify-center text-center px-4 font-medium text-sm ${style.text}`}
-                  style={{ height: ITEM_HEIGHT }}
-                >
-                  {t}
-                </div>
-              ))}
+          {/* Gradientes de profundidad */}
+          <div
+            className="absolute inset-x-0 top-0 h-16 z-10 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(5,5,15,0.95), transparent)",
+            }}
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 h-16 z-10 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(to top, rgba(5,5,15,0.95), transparent)",
+            }}
+          />
+
+          {/* Resaltado central */}
+          <div
+            className={`absolute inset-x-0 z-10 pointer-events-none border-y-2 ${style.border} bg-white/5`}
+            style={{
+              top: Math.floor(VISIBLE_ITEMS / 2) * ITEM_HEIGHT,
+              height: ITEM_HEIGHT,
+            }}
+          />
+
+          {/* Items */}
+          <div
+            ref={containerRef}
+            className="absolute inset-x-0 top-0 will-change-transform"
+          >
+            {displayItems.map((t, i) => (
+              <div
+                key={i}
+                className={`flex items-center justify-center text-center px-5 font-semibold text-sm ${style.text}`}
+                style={{ height: ITEM_HEIGHT }}
+              >
+                {t}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Flechas laterales del slot */}
+        <div
+          className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 text-xl ${style.text}`}
+        >
+          ▶
+        </div>
+        <div
+          className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 text-xl ${style.text}`}
+        >
+          ◀
         </div>
       </div>
 
-      {finalEffect ? (
+      {/* Resultado final */}
+      {finalEffect && (
         <div
-          className={`w-64 rounded-xl border-2 ${style.border} ${style.bg} px-4 py-3 text-center`}
+          className={`w-full max-w-xs rounded-xl border-2 ${style.border} ${style.bg} px-5 py-4 text-center`}
         >
-          <p className="text-xs text-gray-400 mb-1">Has ganado</p>
+          <p className="text-xs text-gray-400 mb-1">¡Has ganado!</p>
           <p className={`font-bold text-base ${style.text}`}>{finalEffect}</p>
         </div>
-      ) : (
+      )}
+
+      {/* Botón */}
+      {!finalEffect && (
         <button
           onClick={handleSpin}
           disabled={spinning}
-          className={`px-8 py-3 font-bold rounded-full text-sm transition-all transform hover:scale-105 active:scale-95 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed ${style.badge} text-white`}
+          className={`px-10 py-3 font-bold rounded-full text-white text-sm transition-all transform hover:scale-105 active:scale-95 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 ${style.badge}`}
         >
           {spinning ? "🎰 Girando..." : "🎰 ¡Revelar ticket!"}
         </button>

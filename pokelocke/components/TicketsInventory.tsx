@@ -79,7 +79,8 @@ export default function TicketsInventory({
   }
 
   function TicketCard({ ticket }: { ticket: Ticket }) {
-    const style = CATEGORY_STYLES[ticket.category] ?? CATEGORY_STYLES.PENDING;
+    const style =
+      CATEGORY_STYLES[ticket.category.toLowerCase()] ?? CATEGORY_STYLES.pending;
 
     if (ticket.pending_spin) {
       return (
