@@ -191,6 +191,9 @@ export default function TicketsInventory({
         <SpinModal
           ticketId={spinTicket.id}
           phase={spinTicket.phase ?? defaultPhase}
+          initialCategory={
+            spinTicket.category !== "pending" ? spinTicket.category : undefined
+          }
           onClose={() => {
             setSpinTicket(null);
             router.refresh();

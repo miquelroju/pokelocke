@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 
 interface Battle {
   player1_id: string;
@@ -90,6 +91,7 @@ export async function registerRound(
     }
   }
 
+  revalidatePath("/dashboard");
   return { success: true, round_id: round.id, ranking };
 }
 
@@ -110,6 +112,7 @@ export async function saveTicket(
     .eq("id", ticketId);
 
   if (error) return { error: error.message };
+  revalidatePath("/dashboard");
   return { success: true };
 }
 
@@ -118,6 +121,18 @@ export async function markTicketAsUsed(ticketId: string) {
   const { error } = await supabase
     .from("tickets")
     .update({ used: true })
+    .eq("id", ticketId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+export async function saveTicketCategory(ticketId: string, category: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("tickets")
+    .update({ category })
     .eq("id", ticketId);
 
   if (error) return { error: error.message };

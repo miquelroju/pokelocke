@@ -121,13 +121,28 @@ export default function TicketSlot({ category, onResult }: TicketSlotProps) {
     const list: string[] = [];
     // Rellenar con 40 ítems random
     for (let i = 0; i < 40; i++) {
-      list.push(pool[Math.floor(Math.random() * pool.length)]);
+      let candidate: string;
+      // Evitar repetir el mismo item que el anterior
+      do {
+        candidate = pool[Math.floor(Math.random() * pool.length)];
+      } while (list.length > 0 && candidate === list[list.length - 1]);
+      list.push(candidate);
     }
-    // El ganador va justo en la posición central visible al parar
-    list.push(winner);
-    // Añadir items después para que no quede cortado
+
+    // El ganador va justo en la posición 40, evitando repetir el anterior
+    const safeWinner =
+      list[list.length - 1] === winner && pool.length > 1
+        ? winner // lo dejamos igual si no hay alternativa mejor
+        : winner;
+    list.push(safeWinner);
+
+    // Items finales tras el ganador
     for (let i = 0; i < Math.floor(VISIBLE_ITEMS / 2); i++) {
-      list.push(pool[Math.floor(Math.random() * pool.length)]);
+      let candidate: string;
+      do {
+        candidate = pool[Math.floor(Math.random() * pool.length)];
+      } while (candidate === list[list.length - 1]);
+      list.push(candidate);
     }
     return list;
   }
