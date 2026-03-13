@@ -42,9 +42,12 @@ export default async function DashboardPage() {
       <nav className="border-b border-gray-800 px-8 py-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">🎮 Pokelocke</h1>
         <div className="flex items-center gap-4">
-          <span className="text-gray-400 text-sm">
+          <a
+            href={`/trainer/${user.user_metadata.username}`}
+            className="text-gray-400 hover:text-white text-sm transition"
+          >
             {user.user_metadata.username}
-          </span>
+          </a>
           <form action={logout}>
             <button
               type="submit"

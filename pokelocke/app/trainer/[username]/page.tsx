@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import GymToggle from "@/components/GymToggle";
 import PokemonCard from "@/components/PokemonCard";
+import EditProfileModal from "@/components/EditProfileModal";
 
 const POSITION_STYLES = [
   { medal: "🥇", text: "text-yellow-400" },
@@ -25,6 +26,11 @@ export default async function TrainerPage({
     .single();
 
   if (!profile) notFound();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isOwnProfile = user?.id === profile.id;
 
   // Obtener sus juegos
   const { data: games } = await supabase
@@ -81,15 +87,29 @@ export default async function TrainerPage({
       <div className="max-w-5xl mx-auto px-8 py-10 flex flex-col gap-10">
         {/* Cabecera del perfil */}
         <div className="flex items-center gap-6">
-          <div className="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center text-3xl font-bold">
-            {username[0].toUpperCase()}
+          <div className="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center text-3xl font-bold overflow-hidden">
+            {profile.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt={username}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              username[0].toUpperCase()
+            )}
           </div>
-          <div>
+          <div className="flex-1">
             <h2 className="text-3xl font-bold">{username}</h2>
             <p className="text-gray-400 mt-1">
               {games?.length ?? 0} juegos · Entrenador Pokémon
             </p>
           </div>
+          {isOwnProfile && (
+            <EditProfileModal
+              currentUsername={username}
+              currentAvatarUrl={profile.avatar_url}
+            />
+          )}
         </div>
 
         {/* Estadísticas */}
