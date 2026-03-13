@@ -34,7 +34,7 @@ export default async function DashboardPage() {
     .limit(1)
     .single();
 
-  const defaultPhase = lastResult?.phase ?? "ANTES_4_GYM";
+  const defaultPhase = lastResult?.phase ?? "antes_gym4";
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">

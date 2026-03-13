@@ -99,3 +99,59 @@ export async function updatePokemon(formData: FormData) {
 
   revalidatePath(`/dashboard/game/${gameId}`);
 }
+
+export async function updateGameStatus(gameId: string, status: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase
+    .from("games")
+    .update({ status })
+    .eq("id", gameId)
+    .eq("user_id", user.id); // solo el dueño puede cambiar
+
+  revalidatePath(`/dashboard/game/${gameId}`);
+  revalidatePath("/dashboard");
+}
+
+export async function updateGameLives(gameId: string, delta: number) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { data: game } = await supabase
+    .from("games")
+    .select("lives_remaining")
+    .eq("id", gameId)
+    .single();
+
+  if (!game) return;
+
+  const newLives = Math.max(0, game.lives_remaining + delta);
+
+  await supabase
+    .from("games")
+    .update({ lives_remaining: newLives })
+    .eq("id", gameId)
+    .eq("user_id", user.id);
+
+  revalidatePath(`/dashboard/game/${gameId}`);
+  revalidatePath("/dashboard");
+}
+
+export async function deleteGame(gameId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.from("games").delete().eq("id", gameId).eq("user_id", user.id); // Solo el dueño puede borrarlo
+
+  revalidatePath("/dashboard");
+}
