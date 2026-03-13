@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 const PHASE_LABELS: Record<string, string> = {
   antes_gym4: "Fase 1 - Antes del 4º gimnasio",
@@ -30,6 +31,9 @@ const POSITION_STYLES = [
 
 export default async function Home() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Ranking global: victorias totales por usuario
   const { data: combatResults } = await supabase
@@ -88,18 +92,29 @@ export default async function Home() {
       <nav className="border-b border-gray-800 px-8 py-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">🎮 Pokelocke</h1>
         <div className="flex gap-3">
-          <Link
-            href="/login"
-            className="px-4 py-2 text-sm text-gray-300 hover:text-white border border-gray-700 rounded-lg transition"
-          >
-            Iniciar sesión
-          </Link>
-          <Link
-            href="/register"
-            className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition"
-          >
-            Registrarse
-          </Link>
+          {user ? (
+            <Link
+              href="/dashboard"
+              className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition"
+            >
+              Mi panel →
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="px-4 py-2 text-sm text-gray-300 hover:text-white border border-gray-700 rounded-lg transition"
+              >
+                Iniciar sesión
+              </Link>
+              <Link
+                href="/register"
+                className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition"
+              >
+                Registrarse
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
