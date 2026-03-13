@@ -76,7 +76,7 @@ export async function updatePokemonStatus(
   revalidatePath(`/dashboard/game/${gameId}`);
 }
 
-export async function updatePokemon(formData: FormData) {
+export async function updatePokemonForm(formData: FormData) {
   const supabase = await createClient();
 
   const pokemonId = formData.get("pokemon_id") as string;
@@ -154,4 +154,43 @@ export async function deleteGame(gameId: string) {
   await supabase.from("games").delete().eq("id", gameId).eq("user_id", user.id); // Solo el dueño puede borrarlo
 
   revalidatePath("/dashboard");
+}
+
+export async function deletePokemon(pokemonId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("pokemon").delete().eq("id", pokemonId);
+  if (error) return { error: error.message };
+  return { success: true };
+}
+
+export async function updatePokemon(
+  pokemonId: string,
+  updates: Record<string, string | number | boolean | null>,
+) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("pokemon")
+    .update(updates)
+    .eq("id", pokemonId);
+  if (error) return { error: error.message };
+  return { success: true };
+}
+
+export async function evolvePokemon(
+  pokemonId: string,
+  evolutionData: {
+    species_name: string;
+    sprite_url: string;
+    type1: string;
+    type2: string | null;
+    ability: string;
+  },
+) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("pokemon")
+    .update(evolutionData)
+    .eq("id", pokemonId);
+  if (error) return { error: error.message };
+  return { success: true };
 }
