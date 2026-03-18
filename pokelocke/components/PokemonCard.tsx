@@ -173,7 +173,6 @@ export default function PokemonCard({ pokemon, isOwner, isDead }: Props) {
       move2: (fd.get("move2") as string) || null,
       move3: (fd.get("move3") as string) || null,
       move4: (fd.get("move4") as string) || null,
-      status: (fd.get("status") as string) || null,
       route_caught: (fd.get("route_caught") as string) || null,
       is_shiny: fd.get("is_shiny") === "on",
     };
@@ -426,22 +425,6 @@ export default function PokemonCard({ pokemon, isOwner, isDead }: Props) {
                     />
                   ))}
                 </div>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-gray-400 text-sm">Estado</label>
-                <select
-                  name="status"
-                  defaultValue={pokemon.status ?? ""}
-                  className={inputClass}
-                >
-                  <option value="">— Ninguno —</option>
-                  <option value="burned">Quemado</option>
-                  <option value="frozen">Congelado</option>
-                  <option value="paralyzed">Paralizado</option>
-                  <option value="poisoned">Envenenado</option>
-                  <option value="asleep">Dormido</option>
-                </select>
               </div>
 
               <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
